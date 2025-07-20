@@ -10,16 +10,22 @@ namespace DapperStudentApi.Controllers
     public class StudentsController : ControllerBase
     {
         private readonly StudentRepository _repo;
-        public StudentsController(StudentRepository repo)
+        private readonly ILogger<StudentsController> _logger;
+
+        public StudentsController(StudentRepository repo, ILogger<StudentsController> logger)
         {
             _repo = repo;
+            _logger = logger;
         }
 
+        
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var students = await _repo.GetAllAsync();
+            _logger.LogInformation("Student list retrievet at {Time}", DateTime.Now);
             return Ok(students);
+            
         }
 
         [HttpGet("{id}")]
@@ -71,5 +77,6 @@ namespace DapperStudentApi.Controllers
             }
             return NotFound();
         }
+
     }
 }

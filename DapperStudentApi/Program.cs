@@ -24,6 +24,8 @@ builder.Services.AddControllers()
     .AddFluentValidation(fv =>
     fv.RegisterValidatorsFromAssemblyContaining<StudentValidator>());
 
+builder.Services.AddAutoMapper(typeof(Program));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

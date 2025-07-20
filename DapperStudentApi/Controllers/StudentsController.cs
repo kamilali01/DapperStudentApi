@@ -1,4 +1,6 @@
-﻿using DapperStudentApi.Models;
+﻿using AutoMapper;
+using DapperStudentApi.Dtos;
+using DapperStudentApi.Models;
 using DapperStudentApi.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +13,13 @@ namespace DapperStudentApi.Controllers
     {
         private readonly StudentRepository _repo;
         private readonly ILogger<StudentsController> _logger;
+        private readonly IMapper _mapper;
 
-        public StudentsController(StudentRepository repo, ILogger<StudentsController> logger)
+        public StudentsController(StudentRepository repo, ILogger<StudentsController> logger, IMapper mapper)
         {
             _repo = repo;
             _logger = logger;
+            _mapper = mapper;
         }
 
         
@@ -39,12 +43,13 @@ namespace DapperStudentApi.Controllers
             return Ok(student);
         }
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Student student)
+        public async Task<IActionResult> Create([FromBody] StudentDto dto)
         {
-            if (student == null || string.IsNullOrWhiteSpace(student.FullName) || student.Age <= 0)
+            if (dto == null || string.IsNullOrWhiteSpace(dto.FullName) || dto.Age <= 0)
             {
                 return BadRequest("Invalid student data.");
             }
+            var student = _mapper.Map<Student>(dto);
             var result = await _repo.CreateAsync(student);
             if (result > 0)
             {
@@ -53,12 +58,13 @@ namespace DapperStudentApi.Controllers
             return StatusCode(StatusCodes.Status500InternalServerError, "Error creating student.");
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] Student student)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] StudentDto dto)
         {
-            if (student == null || string.IsNullOrWhiteSpace(student.FullName) || student.Age <= 0)
+            if (dto == null || string.IsNullOrWhiteSpace(dto.FullName) || dto.Age <= 0)
             {
                 return BadRequest("Invalid student data.");
             }
+            var student = _mapper.Map<Student>(dto);
             student.Id = id;
             var result = await _repo.UpdateAsync(student);
             if (result > 0)

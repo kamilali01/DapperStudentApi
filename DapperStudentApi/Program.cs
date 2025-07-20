@@ -1,4 +1,6 @@
 using DapperStudentApi.Repositories;
+using DapperStudentApi.Validators;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +10,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddScoped<StudentRepository>();
+
+builder.Services.AddControllers()
+    .AddFluentValidation(fv =>
+    fv.RegisterValidatorsFromAssemblyContaining<StudentValidator>());
 
 var app = builder.Build();
 
